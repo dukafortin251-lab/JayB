@@ -1,0 +1,18 @@
+### 1. Récupérer tous les genres
+GET http://localhost:3000/genres
+
+### 2. Ajouter un genre (Exemple : Hip-Hop)
+POST http://localhost:3000/genres
+Content-Type: application/json
+
+{
+  "name": "Hip-Hop"
+}
+
+### 3. Ajouter un autre genre (Exemple : R&B)
+POST http://localhost:3000/genres
+Content-Type: application/json
+
+{
+  "name": "R&B"
+}

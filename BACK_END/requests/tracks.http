@@ -1,0 +1,5 @@
+### 1. Récupérer toutes les musiques
+GET http://localhost:3000/tracks
+
+### 2. Récupérer une musique spécifique (Remplace '1' par le vrai ID d'une de tes musiques)
+GET http://localhost:3000/tracks/1

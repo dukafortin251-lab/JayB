@@ -1,0 +1,26 @@
+### 1. Récupérer tous les utilisateurs
+GET http://localhost:3000/users
+
+### 2. Ajouter un nouvel utilisateur
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+   "email": "nouveau@test.com",
+   "password_hash": "supersecret"
+}
+
+### 3. Récupérer un utilisateur spécifique (Remplace '1' par un vrai ID qui existe dans ta base)
+GET http://localhost:3000/users/1
+
+### 4. Modifier un utilisateur existant (Remplace '1' par l'ID que tu veux modifier)
+PUT http://localhost:3000/users/1
+Content-Type: application/json
+
+{
+   "email": "email_modifie@test.com",
+   "password_hash": "nouveau_mot_de_passe"
+}
+
+### 5. Supprimer un utilisateur (Remplace '1' par l'ID à supprimer)
+DELETE http://localhost:3000/users/1
