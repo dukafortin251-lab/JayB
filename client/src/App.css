@@ -1,0 +1,73 @@
+/* --- Mise en page globale --- */
+.page-accueil {
+  max-width: 400px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Navbar & Logo --- */
+.navbar {
+  padding: 20px;
+  background: white;
+  position: relative;
+}
+.navbar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo-img {
+  height: 30px; 
+  width: auto;
+}
+.hamburger { 
+  background: none; border: none; font-size: 24px; cursor: pointer; 
+}
+.menu-dropdown {
+  position: absolute; right: 20px; top: 60px;
+  background: white; border: 1px solid #ccc; padding: 10px; z-index: 10;
+}
+.menu-dropdown ul { list-style: none; padding: 0; margin: 0; }
+.menu-dropdown li { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+
+/* --- Grille de cartes --- */
+.main-content { padding: 20px; }
+.genres-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+/* --- Cartes individuelles --- */
+.genre-card {
+  display: flex;
+  flex-direction: column;
+  background: black;
+  color: white;
+  aspect-ratio: 3/4;
+}
+.card-image-placeholder {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.add-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+.card-title { text-align: center; font-size: 10px; padding: 5px; border-top: 1px solid #333; }
+
+/* --- Bas de page --- */
+.bottom-section { text-align: center; padding-bottom: 30px; }
+.info-text { font-size: 12px; margin-bottom: 20px; }
+.tag-button {
+  background: transparent;
+  border: 1px solid black;
+  padding: 10px 40px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}

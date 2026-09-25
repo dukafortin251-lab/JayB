@@ -1,12 +1,12 @@
 import express from 'express';
-import pool from '../../db.js';
+import pool from '../../db.js'; // J'ai gardé ton chemin ../../db.js
 
 const router = express.Router();
 
-// 📌 1. Récupérer tous les utilisateurs
+// 📌 1. Récupérer toutes les musiques
 router.get('/', async (req, res) => {
     try {
-        const queryText = 'SELECT id, email FROM users;';
+        const queryText = 'SELECT * FROM tracks;';
         const result = await pool.query(queryText);
         res.json(result.rows);
     } catch (err) {
@@ -15,31 +15,14 @@ router.get('/', async (req, res) => {
     }
 });
 
-// 📌 2. Ajouter un nouvel utilisateur (POST)
-router.post('/', async (req, res) => {
-    const { email, password_hash } = req.body;
-    if (!email || !password_hash) {
-        return res.status(400).json({ error: 'L\'email et le mot de passe sont obligatoires.' });
-    }
-
-    try {
-        const queryText = `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email;`;
-        const result = await pool.query(queryText, [email, password_hash]);
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        console.error('Erreur lors de l\'ajout :', err);
-        res.status(500).json({ error: 'Erreur interne du serveur' });
-    }
-});
-
-// 📌 3. Récupérer un utilisateur spécifique par son ID
+// 📌 2. Récupérer une musique par son ID
 router.get('/:id', async (req, res) => {
-    const userID = req.params.id;
+    const trackID = req.params.id;
     try {
-        const queryText = 'SELECT id, email FROM users WHERE id = $1;';
-        const result = await pool.query(queryText, [userID]);
+        const queryText = 'SELECT * FROM tracks WHERE id = $1;';
+        const result = await pool.query(queryText, [trackID]);
         
-        if (result.rows.length === 0) return res.status(404).json({ error: 'Utilisateur introuvable' });
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Musique introuvable' });
         res.json(result.rows[0]);
     } catch (err) {
         console.error('Erreur serveur :', err);
@@ -47,38 +30,47 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// 📌 4. Modifier un utilisateur existant (PUT)
-router.put('/:id', async (req, res) => {
-    const userId = req.params.id;
-    const { email, password_hash } = req.body; 
+// 📌 3. Ajouter une nouvelle musique (POST)
+router.post('/', async (req, res) => {
+    // J'ai ajouté bpm et musical_key pour correspondre à ton fichier SQL !
+    const { title, bpm, musical_key, user_id } = req.body;
 
-    if (!email || !password_hash) {
-        return res.status(400).json({ error: 'Email et mot de passe obligatoires.' });
+    if (!title || !user_id) {
+        return res.status(400).json({ error: 'Le titre et l\'ID du créateur (user_id) sont obligatoires.' });
     }
 
     try {
-        const queryText = `UPDATE users SET email = $1, password_hash = $2 WHERE id = $3 RETURNING id, email;`;
-        const result = await pool.query(queryText, [email, password_hash, userId]);
-        
-        if (result.rows.length === 0) return res.status(404).json({ error: 'Utilisateur introuvable' });
-        res.json(result.rows[0]);
+        const queryText = `
+            INSERT INTO tracks (title, bpm, musical_key, user_id) 
+            VALUES ($1, $2, $3, $4) 
+            RETURNING *; 
+        `;
+        const result = await pool.query(queryText, [title, bpm, musical_key, user_id]);
+        res.status(201).json(result.rows[0]);
     } catch (err) {
-        console.error('Erreur lors de la modification :', err);
+        console.error('Erreur lors de l\'ajout de la musique :', err);
         res.status(500).json({ error: 'Erreur interne du serveur' });
     }
 });
 
-// 📌 5. Supprimer un utilisateur (DELETE)
-router.delete('/:id', async (req, res) => {
-    const userId = req.params.id;
+// 📌 4. Lier une musique à un genre (POST)
+router.post('/:id/genres', async (req, res) => {
+    const trackId = req.params.id; 
+    const { genre_id } = req.body; 
+
+    if (!genre_id) return res.status(400).json({ error: 'L\'ID du genre (genre_id) est obligatoire.' });
+
     try {
-        const queryText = `DELETE FROM users WHERE id = $1 RETURNING id, email;`;
-        const result = await pool.query(queryText, [userId]);
-        
-        if (result.rows.length === 0) return res.status(404).json({ error: 'Utilisateur introuvable' });
-        res.json({ message: `L'utilisateur ${result.rows[0].email} a bien été supprimé.` });
+        const queryText = `
+            INSERT INTO track_genres (track_id, genre_id) 
+            VALUES ($1, $2) 
+            RETURNING *;
+        `;
+        const result = await pool.query(queryText, [trackId, genre_id]);
+        res.status(201).json({ message: "Le genre a bien été ajouté à la musique !", lien: result.rows[0] });
     } catch (err) {
-        console.error('Erreur lors de la suppression :', err);
+        if (err.code === '23505') return res.status(409).json({ error: 'Cette musique possède déjà ce genre.' });
+        console.error('Erreur lors de la liaison :', err);
         res.status(500).json({ error: 'Erreur interne du serveur' });
     }
 });
